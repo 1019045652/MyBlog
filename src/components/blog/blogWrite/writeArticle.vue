@@ -1,7 +1,7 @@
 <template>
   <div  style="background:white;padding:24px;">
     <div>
-      <h1>写博客页面</h1>
+      <h1>编写你的博客</h1>
       <!-- 富文本编辑器 -->
       <div class="edit_container">
         <quill-editor
