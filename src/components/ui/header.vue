@@ -11,18 +11,51 @@
     >
       <!-- 侧边栏关闭时的样子： -->
       <div v-show="collapsed">
-        <a-tooltip placement="right">
-          <template slot="title" style="background:white;">
-            <span>回到首页</span>
-          </template>
-          <transition name="fade">
-            <a-icon
-              type="home"
-              @click="toHeadPage()"
-              style="font-size:20px;cursor:pointer;color:white;margin-left:15px;margin-top:20px;"
-            />
-          </transition>
-        </a-tooltip>
+        <div >
+          <div style="height:50px;" class="menu animated fadeInRight" >
+          <a-icon
+            type="home"
+            @click="toHeadPage()"
+            @mouseenter="showFirst"
+            v-show="!firstShow"
+            style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
+          />
+          <p class="menu animated  fadeInLeft" @mouseleave="hideFirst" v-show="firstShow" style="padding:0px;margin-bottom:0px;font-size:14px;cursor:pointer;color:lightgray;margin-left:12px;line-height:60px;">首页</p>
+          </div>
+        </div>
+        <div style="height:50px;" class="menu animated fadeInRight">
+          <a-icon
+            type="align-left"
+            @click="toHeadPage()"
+            @mouseenter="showFirst"
+            v-show="!firstShow"
+            style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
+          />
+         <p class="menu animated  fadeInLeft" @mouseleave="hideFirst" v-show="firstShow" style="padding:0px;margin-bottom:0px;font-size:14px;cursor:pointer;color:lightgray;margin-left:12px;line-height:60px;">文章</p>
+
+        </div>
+        <div style="height:50px;" class="menu animated fadeInRight">
+          <a-icon
+            type="file-text"
+            @click="toHeadPage()"
+             @mouseenter="showFirst"
+            v-show="!firstShow"
+            style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
+          />
+        <p class="menu animated  fadeInLeft" @mouseleave="hideFirst" v-show="firstShow" style="padding:0px;margin-bottom:0px;font-size:14px;cursor:pointer;color:lightgray;margin-left:12px;line-height:60px;">页面</p>
+
+        </div>
+        <div style="height:50px;" class=" menu animated fadeInRight">
+          <a-icon
+            type="form"
+            @click="toHeadPage()"
+             @mouseenter="showFirst"
+            v-show="!firstShow"
+            style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
+          />
+       <p class="menu animated  fadeInLeft" @mouseleave="hideFirst" v-show="firstShow" style="padding:0px;margin-bottom:0px;font-size:14px;cursor:pointer;color:lightgray;margin-left:12px;line-height:60px;">操作</p>
+
+        </div>
       </div>
       <!-- 侧边栏展开时的样子： -->
       <div v-show="!collapsed">
@@ -32,7 +65,7 @@
           <a-icon type="home" style="font-size:20px;cursor:pointer;" @click="toHeadPage()"/>
           <span @click="toHeadPage()" style="cursor:pointer;">首页</span>
         </div>
-        <div style="text-align:center;margin-top:30px;">
+        <div style="text-align:center;margin-top:30px;" class="animated pulse">
           <a-avatar :size="80" src="http://seopic.699pic.com/photo/50018/1470.jpg_wh1200.jpg"/>
           <br>
           <span style="color:#DDDDDD;font-weight:800;">大庇天下寒士
@@ -82,16 +115,28 @@
       </div>
     </a-layout-sider>
     <a-layout>
-      
+      <!-- 登录框 -->
+      <a-modal title="请登录" v-model="visible" :footer="null">
+        <a-form id="components-form-demo-normal-login" class="login-form">
+          <a-form-item>
+            <a-input placeholder="用户名">
+              <a-icon slot="prefix" type="user" style="color: rgba(0,0,0,.25)"/>
+            </a-input>
+          </a-form-item>
+          <a-form-item>
+            <a-input type="password" placeholder="密码">
+              <a-icon slot="prefix" type="lock" style="color: rgba(0,0,0,.25)"/>
+            </a-input>
+          </a-form-item>
+          <a-form-item>
+            <a-checkbox>记住密码</a-checkbox>
+            <a class="login-form-forgot" href>忘记密码？</a>
+            <a-button type="primary" class="login-form-button" @click.native="login()">登录</a-button>
+            <a href="javaScript:;" @click="toRegist()">没有账号？去注册>></a>
+          </a-form-item>
+        </a-form>
+      </a-modal>
       <!-- header栏 -->
-      <a-modal
-      title="Basic Modal"
-      v-model="visible"
-    >
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-    </a-modal>
       <a-layout-header style="background: #fff; padding: 0">
         <!-- 展开收起按钮 -->
         <a-icon
@@ -103,17 +148,19 @@
         <a-button style @click.native="showLogin">登录</a-button>
       </a-layout-header>
 
-      <!-- 面包屑栏 -->
+      <!-- 面包屑栏
       <a-layout-header
         style="background: #fff; padding: 0 ;border-top:1px solid white; margin-top:10px;"
       >
         <div style="padding-left:40px;">
-          <a-breadcrumb style="margin: 16px 0">
-            <a-breadcrumb-item style="font-weight:700;">首页</a-breadcrumb-item>
-            <a-breadcrumb-item style="font-weight:700;">文章</a-breadcrumb-item>
+          <a-breadcrumb :routes="routes">
+            <template slot="itemRender" slot-scope="{route, params, routes, paths}">
+              <span v-if="routes.indexOf(route) === routes.length - 1">{{route.breadcrumbName}}</span>
+              <router-link v-else :to="`/${paths.join('/')}`">{{route.breadcrumbName}}</router-link>
+            </template>
           </a-breadcrumb>
         </div>
-      </a-layout-header>
+      </a-layout-header> -->
       <!-- 正文内容(content) -->
       <a-layout-content
         :style="{ margin: '24px 16px', background: '#fff', minHeight: '240px',overflow: 'initial' }"
@@ -125,23 +172,38 @@
   </a-layout>
 </template>
 <script>
+import "@/assets/css/animate.css";
 export default {
   data() {
+     const { lang } = this.$route.params
     return {
       collapsed: false,
-      visible: true,
+      visible: false,
       username: "",
       password: "",
       // 侧边菜单的属性
       menuShow: false,
       menuStyle: "padding:0px;background: #242424;border:0px;",
-      iconStyle: "margin-right:10px;margin-left:10px;color:#DDDDDD;"
+      iconStyle: "margin-right:10px;margin-left:10px;color:#DDDDDD;",
+      firstShow:false
     };
   },
   mounted() {
     this.$router.push("/blogArticle/articleList");
   },
   methods: {
+    // 
+    showFirst(){
+      this.firstShow = true
+    },
+    hideFirst(){
+      this.firstShow = false
+    },
+    // 跳转到注册页面
+    toRegist() {
+      this.$router.push("/blogRegist/regist");
+      this.visible = false;
+    },
     // 跳转首页
     toHeadPage() {
       this.$router.push("/blogArticle/articleList");
@@ -154,9 +216,8 @@ export default {
     showLogin() {
       this.visible = true;
     },
-    login() {},
+    login() {}
   }
-  
 };
 </script>
 <style>
@@ -212,19 +273,10 @@ export default {
   padding: 0px;
   border: 0px;
 }
-/* 开始过渡阶段,动画出去阶段 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.5s ease-out;
+.animated {
+  animation-duration: 0.5s;
 }
-/* 进入开始 */
-.fade-enter {
-  transform: translateY(-500px);
-  opacity: 0;
-}
-/* 出去终点 */
-.fade-leave-active {
-  transform: translateY(500px);
-  opacity: 0;
+.menu:hover{
+  background: #333333;
 }
 </style>

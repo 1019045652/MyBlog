@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Header from '@/components/ui/header'
 import ArticleList from '@/components/blog/blogArticle/articleList.vue'
 import WriteArticle from '@/components/blog/blogWrite/writeArticle.vue'
+import Regist from "@/components/blog/blogUser/regist.vue"
 
 Vue.use(Router)
 
@@ -24,6 +25,10 @@ export default new Router({
                 {
                     path: '/blogWrite/writeArticle',
                     component: WriteArticle
+                },
+                {
+                    path: '/blogRegist/regist',
+                    component: Regist
                 },
 
             ]
