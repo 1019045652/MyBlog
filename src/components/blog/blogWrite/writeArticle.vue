@@ -96,6 +96,8 @@ export default {
         this.$message.error(`${info.file.name} file upload failed.`);
       }
     },
+
+    //  handleFileList(info.fileList) 
   },
   computed: {
     editor() {

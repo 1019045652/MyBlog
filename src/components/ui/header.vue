@@ -6,40 +6,106 @@
       collapsible
       v-model="collapsed"
       theme="light"
-      style="background: #242424; padding:0 ;border:1px solid #e0dfdf ;border:0px;"
+      style="background: #242424; padding:0 ;border:1px solid #e0dfdf ;border:0px;z-index:1000;"
       collapsedWidth="50"
     >
       <!-- 侧边栏关闭时的样子： -->
       <div v-show="collapsed">
         <div>
-          <div style="height:50px;" class="menu animated fadeInRight">
-            <a-icon
-              type="home"
-              @click="toHeadPage()"
-              style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
-            />
-          </div>
+          <a-tooltip placement="left">
+            <template slot="title">
+              <span>首页</span>
+            </template>
+            <div style="height:50px;" class="menu animated fadeInRight">
+              <a-icon
+                type="home"
+                @click="toHeadPage()"
+                style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
+              />
+            </div>
+          </a-tooltip>
         </div>
-        <div style="height:50px;" class="menu animated fadeInRight">
+        <!-- 网站页面 -->
+        <div
+          @mouseenter="showMenu(1)"
+          @mouseleave="hideMenu(1)"
+          style="height:50px;"
+          class="menu animated fadeInRight side-menu1"
+        >
           <a-icon
             type="align-left"
             @click="toHeadPage()"
             style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
           />
         </div>
-        <div style="height:50px;" class="menu animated fadeInRight">
+        <!-- 我的操作 -->
+        <div
+          @mouseenter="showMenu(2)"
+          @mouseleave="hideMenu(2)"
+          style="height:50px;"
+          class="menu animated fadeInRight side-menu2"
+        >
           <a-icon
             type="file-text"
             @click="toHeadPage()"
             style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
           />
         </div>
-        <div style="height:50px;" class="menu animated fadeInRight">
+        <!-- 待开发 -->
+        <div
+          @mouseenter="showMenu(3)"
+          @mouseleave="hideMenu(3)"
+          style="height:50px;"
+          class="menu animated fadeInRight side-menu1z"
+        >
           <a-icon
             type="form"
             @click="toHeadPage()"
             style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
           />
+        </div>
+        <!-- 菜单页面 -->
+        <div
+          @mouseenter="showMenu1"
+          @mouseleave="hideMenu1"
+          class="smallMenu"
+          style="width:200px;background:pink;margin-left:50px;margin-top:-150px; z-index:1000000;"
+        >
+          <!-- 第一个菜单 -->
+          <ul class="smallMenu1" style="padding-top:5px;">
+            <!-- 标题 -->
+            <div style="color:white;border-bottom:1px solid gray;padding-bottom:5px;"><a-icon
+            type="align-left"
+            @click="toHeadPage()"
+            style="font-size:13px;margin-left:10px;"
+          /><span style="margin-left:0px;margin-bottom:10px;font-size:13px;">文章分类</span>
+          </div>
+            <li>java</li>
+            <li>vue.js</li>
+            <li>html</li>
+          </ul>
+          <!-- 第二个菜单 -->
+          <ul class="smallMenu2" style="padding-top:5px;">
+            <!-- 标题 -->
+            <div style="color:white;border-bottom:1px solid gray;padding-bottom:5px;"><a-icon
+            type="file-text"
+            @click="toHeadPage()"
+            style="font-size:13px;margin-left:10px;"
+          /><span style="margin-left:0px;margin-bottom:10px;font-size:13px;">我的操作</span>
+          </div>
+            <li @click="toWriteArticle()">写博客</li>
+          </ul>
+          <!-- 第三个菜单 -->
+         <ul class="smallMenu3" style="padding-top:5px;">
+            <!-- 标题 -->
+            <div style="color:white;border-bottom:1px solid gray;padding-bottom:5px;"><a-icon
+            type="form"
+            @click="toHeadPage()"
+            style="font-size:13px;margin-left:10px;"
+          /><span style="margin-left:0px;margin-bottom:10px;font-size:13px;">网站页面</span>
+          </div>
+            <li>经验</li>
+          </ul>
         </div>
       </div>
       <!-- 侧边栏展开时的样子： -->
@@ -102,7 +168,7 @@
     <a-layout>
       <!-- 登录框 -->
       <!-- 登录页面 -->
-      <a-modal title="请登录" v-model="visible" :footer="null">
+      <a-modal title="请登录" v-model="visible" :footer="null" width="400px">
         <a-form id="components-form-demo-normal-login" class="login-form">
           <a-form-item>
             <a-input v-model="userName" placeholder="用户名">
@@ -163,6 +229,35 @@ export default {
     this.$router.push("/blogArticle/articleList");
   },
   methods: {
+    // 对侧边菜单收起的控制
+    hideMenu1() {
+      $(".smallMenu").hide();
+    },
+    showMenu1() {
+      $(".smallMenu").show();
+    },
+    hideMenu() {
+      $(".smallMenu").hide();
+    },
+    showMenu(num) {
+      if (num === 1) {
+        $(".smallMenu").css("margin-top", "-150px");
+        $(".smallMenu1").show();
+        $(".smallMenu2").hide();
+        $(".smallMenu3").hide();
+      } else if (num === 2) {
+        $(".smallMenu").css("margin-top", "-100px");
+        $(".smallMenu1").hide();
+        $(".smallMenu2").show();
+        $(".smallMenu3").hide();
+      } else if (num === 3) {
+        $(".smallMenu").css("margin-top", "-50px");
+        $(".smallMenu1").hide();
+        $(".smallMenu2").hide();
+        $(".smallMenu3").show();
+      }
+      $(".smallMenu").show();
+    },
     // 跳转到注册页面
     toRegist() {
       this.$router.push("/blogRegist/regist");
@@ -243,12 +338,12 @@ export default {
   width: 100%;
 }
 .ant-collapse {
-  background: #242424;
+  background: #1d1d1d;
 }
 /* p标签的样式 */
 .menu-side {
   display: block;
-  background: #1b1b1b;
+  background: #161616;
   height: 40px;
   font-size: 14px;
   line-height: 40px;
@@ -258,7 +353,7 @@ export default {
   color: #cccccc;
 }
 .menu-side:hover {
-  background: #333333;
+  background: #000000;
 }
 /* 修改折叠面板的本来样式 */
 .ant-collapse-content {
@@ -277,7 +372,28 @@ export default {
 .ant-layout {
   background: rgb(238, 238, 238);
 }
-.ant-layout-content{
-    background: rgb(238, 238, 238);
+.ant-layout-content {
+  background: rgb(238, 238, 238);
+}
+.smallMenu {
+display:none;
+}
+.smallMenu ul{
+  background: #333333;
+  padding:0px;
+}
+.smallMenu li{
+  cursor: pointer;
+  font-size:15px;
+  color:lightgray;
+  padding-left:30px;
+  list-style: none;
+  width: 100%;
+  display:block;
+  height:35px;
+  line-height:35px;
+}
+.smallMenu li:hover{
+    background: #161616;
 }
 </style>
