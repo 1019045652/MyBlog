@@ -11,50 +11,35 @@
     >
       <!-- 侧边栏关闭时的样子： -->
       <div v-show="collapsed">
-        <div >
-          <div style="height:50px;" class="menu animated fadeInRight" >
-          <a-icon
-            type="home"
-            @click="toHeadPage()"
-            @mouseenter="showFirst"
-            v-show="!firstShow"
-            style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
-          />
-          <p class="menu animated  fadeInLeft" @mouseleave="hideFirst" v-show="firstShow" style="padding:0px;margin-bottom:0px;font-size:14px;cursor:pointer;color:lightgray;margin-left:12px;line-height:60px;">首页</p>
+        <div>
+          <div style="height:50px;" class="menu animated fadeInRight">
+            <a-icon
+              type="home"
+              @click="toHeadPage()"
+              style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
+            />
           </div>
         </div>
         <div style="height:50px;" class="menu animated fadeInRight">
           <a-icon
             type="align-left"
             @click="toHeadPage()"
-            @mouseenter="showFirst"
-            v-show="!firstShow"
             style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
           />
-         <p class="menu animated  fadeInLeft" @mouseleave="hideFirst" v-show="firstShow" style="padding:0px;margin-bottom:0px;font-size:14px;cursor:pointer;color:lightgray;margin-left:12px;line-height:60px;">文章</p>
-
         </div>
         <div style="height:50px;" class="menu animated fadeInRight">
           <a-icon
             type="file-text"
             @click="toHeadPage()"
-             @mouseenter="showFirst"
-            v-show="!firstShow"
             style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
           />
-        <p class="menu animated  fadeInLeft" @mouseleave="hideFirst" v-show="firstShow" style="padding:0px;margin-bottom:0px;font-size:14px;cursor:pointer;color:lightgray;margin-left:12px;line-height:60px;">页面</p>
-
         </div>
-        <div style="height:50px;" class=" menu animated fadeInRight">
+        <div style="height:50px;" class="menu animated fadeInRight">
           <a-icon
             type="form"
             @click="toHeadPage()"
-             @mouseenter="showFirst"
-            v-show="!firstShow"
             style="font-size:20px;cursor:pointer;color:lightgray;margin-left:15px;margin-top:20px;"
           />
-       <p class="menu animated  fadeInLeft" @mouseleave="hideFirst" v-show="firstShow" style="padding:0px;margin-bottom:0px;font-size:14px;cursor:pointer;color:lightgray;margin-left:12px;line-height:60px;">操作</p>
-
         </div>
       </div>
       <!-- 侧边栏展开时的样子： -->
@@ -116,20 +101,21 @@
     </a-layout-sider>
     <a-layout>
       <!-- 登录框 -->
+      <!-- 登录页面 -->
       <a-modal title="请登录" v-model="visible" :footer="null">
         <a-form id="components-form-demo-normal-login" class="login-form">
           <a-form-item>
-            <a-input placeholder="用户名">
+            <a-input v-model="userName" placeholder="用户名">
               <a-icon slot="prefix" type="user" style="color: rgba(0,0,0,.25)"/>
             </a-input>
           </a-form-item>
           <a-form-item>
-            <a-input type="password" placeholder="密码">
+            <a-input v-model="userPassword" type="password" placeholder="密码">
               <a-icon slot="prefix" type="lock" style="color: rgba(0,0,0,.25)"/>
             </a-input>
           </a-form-item>
           <a-form-item>
-            <a-checkbox>记住密码</a-checkbox>
+            <a-checkbox v-model="remember">记住密码</a-checkbox>
             <a class="login-form-forgot" href>忘记密码？</a>
             <a-button type="primary" class="login-form-button" @click.native="login()">登录</a-button>
             <a href="javaScript:;" @click="toRegist()">没有账号？去注册>></a>
@@ -147,58 +133,36 @@
         />
         <a-button style @click.native="showLogin">登录</a-button>
       </a-layout-header>
-
-      <!-- 面包屑栏
-      <a-layout-header
-        style="background: #fff; padding: 0 ;border-top:1px solid white; margin-top:10px;"
-      >
-        <div style="padding-left:40px;">
-          <a-breadcrumb :routes="routes">
-            <template slot="itemRender" slot-scope="{route, params, routes, paths}">
-              <span v-if="routes.indexOf(route) === routes.length - 1">{{route.breadcrumbName}}</span>
-              <router-link v-else :to="`/${paths.join('/')}`">{{route.breadcrumbName}}</router-link>
-            </template>
-          </a-breadcrumb>
-        </div>
-      </a-layout-header> -->
-      <!-- 正文内容(content) -->
       <a-layout-content
-        :style="{ margin: '24px 16px', background: '#fff', minHeight: '240px',overflow: 'initial' }"
+        :style="{ margin: '24px 16px', background: 'rgb(238, 238, 238)', minHeight: '240px',overflow: 'initial' }"
       >
         <router-view></router-view>
       </a-layout-content>
     </a-layout>
-    <!-- 登录页面 -->
   </a-layout>
 </template>
 <script>
+import axios from "axios";
 import "@/assets/css/animate.css";
 export default {
   data() {
-     const { lang } = this.$route.params
+    const { lang } = this.$route.params;
     return {
+      remember: false,
       collapsed: false,
       visible: false,
-      username: "",
-      password: "",
+      userName: "",
+      userPassword: "",
       // 侧边菜单的属性
       menuShow: false,
       menuStyle: "padding:0px;background: #242424;border:0px;",
-      iconStyle: "margin-right:10px;margin-left:10px;color:#DDDDDD;",
-      firstShow:false
+      iconStyle: "margin-right:10px;margin-left:10px;color:#DDDDDD;"
     };
   },
   mounted() {
     this.$router.push("/blogArticle/articleList");
   },
   methods: {
-    // 
-    showFirst(){
-      this.firstShow = true
-    },
-    hideFirst(){
-      this.firstShow = false
-    },
     // 跳转到注册页面
     toRegist() {
       this.$router.push("/blogRegist/regist");
@@ -216,7 +180,38 @@ export default {
     showLogin() {
       this.visible = true;
     },
-    login() {}
+    clearCookie: function() {
+      this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
+    },
+    setCookie(c_name, c_pwd, exdays) {
+      var exdate = new Date(); //获取时间
+      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
+      //字符串拼接cookie
+      window.document.cookie =
+        "userName" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
+      window.document.cookie =
+        "userPwd" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
+    },
+    login() {
+      axios
+        .post("http://localhost:8081/loginUser", {
+          userName: this.userName,
+          userPassword: this.userPassword
+        })
+        .then(res => {
+          if (res.data.code === 200) {
+            if (this.remember === true) {
+              this.setCookie(this.userName, this.passWord, 7);
+            } else {
+              this.clearCookie();
+            }
+            sessionStorage.setItem("user", this.username);
+            this.$message.success(res.data.message);
+          } else {
+            this.$message.error("登陆失败！");
+          }
+        });
+    }
   }
 };
 </script>
@@ -274,9 +269,15 @@ export default {
   border: 0px;
 }
 .animated {
-  animation-duration: 0.5s;
+  animation-duration: 0s;
 }
-.menu:hover{
+.menu:hover {
   background: #333333;
+}
+.ant-layout {
+  background: rgb(238, 238, 238);
+}
+.ant-layout-content{
+    background: rgb(238, 238, 238);
 }
 </style>
