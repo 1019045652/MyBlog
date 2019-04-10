@@ -6,9 +6,22 @@ import router from './router'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
 import $ from 'jquery'
+import filters from '@/assets/api/utils.js';
 
+router.afterEach((to, from, next) => {
+    document.getElementById("qwe").scrollTop = 0
+    console.log(document.documentElement.scrollTop)
+    console.log("跳转了")
+
+
+});
 Vue.use(Antd)
 Vue.config.productionTip = false
+    // 加载过滤器
+Object.keys(filters).forEach(key => {
+    Vue.filter(key, filters[key])
+})
+
 
 /* eslint-disable no-new */
 new Vue({

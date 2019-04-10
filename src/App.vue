@@ -17,7 +17,6 @@ export default {
 
 <style>
 .main-routerView{
-  width: 80%;
   margin: 0 auto;
   box-shadow:0px -5px 57px grey, 0px -49px 18px grey;
 
