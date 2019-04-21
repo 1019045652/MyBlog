@@ -28,7 +28,7 @@
             <li v-show="!loginBtn" @click="logout()">
               <a-icon type="api" theme="filled"/>注销
             </li>
-            <li>
+            <li  @click="aboutMe()">
               <a-icon type="smile" theme="filled"/>关于我
             </li>
             <li @click="showLogin" v-show="loginBtn">
@@ -126,7 +126,9 @@
             <li
               v-for="(articleType,index) in articleTypeList"
               :key="index"
-            >{{articleType.articleTypeName}}</li>
+            >{{articleType.articleTypeName}}
+            
+            </li>
           </ul>
           <!-- 第二个菜单 -->
           <ul class="smallMenu2" style="padding-top:5px;">
@@ -158,7 +160,7 @@
         <!-- 首页按钮 -->
 
         <div style="text-align:center;margin-top:30px;" class="animated pulse">
-          <a-avatar v-if="userImage" class="xwcms" :size="100" :src="userImage"/>
+          <a-avatar @click="toUserMessage()" v-if="userImage" class="xwcms" :size="100" :src="userImage"/>
           <br>
           <span style="color:#DDDDDD;font-weight:800;">
             {{this.nowUser}}
@@ -171,12 +173,23 @@
         <div style="height:0.1px;width:100%;background:Gray;"></div>
         <br>
         <span style="color:#969696;font-size:13px;margin-left:5px;">导航菜单</span>
+
+
         <!-- 侧边菜单组件 -->
-        <a-collapse style="border:0px;padding:0px;position:relative;">
-          <a-collapse-panel id="hover" key="1" :style="menuStyle" :showArrow="false">
+        <a-collapse accordion style="cusor:pointer;border:0px;padding:0px;position:relative;user-select:none;">
+          <!-- 首页 -->
+           <a-collapse-panel id="hover" key="1" @click.native="toHeadPage()"  :style="menuStyle" :showArrow="false">
+            <template slot="header"  >
+              <a-icon type="home" :style="iconStyle" theme="filled"/>
+              <span  style="color:#CCCCCC" >首页</span>
+            </template>
+          </a-collapse-panel>
+          <!-- 文章分类 -->
+          <a-collapse-panel  key="6" :style="menuStyle" :showArrow="false">
             <template slot="header">
               <a-icon type="align-left" :style="iconStyle"/>
               <span style="color:#CCCCCC">文章分类</span>
+              <span style="float:right;margin-right:25px;font-size:10px;color:gray;"><a-icon type="right"/></span>
             </template>
             <!-- 遍历出来的文章类型 -->
             <li
@@ -184,31 +197,53 @@
               v-for="(articleType,index) in articleTypeList"
               :key="index"
               @click="toArticleList(articleType.articleTypeId)"
-            >{{articleType.articleTypeName}}</li>
+            >
+            {{articleType.articleTypeName}}
+            <a-badge style="float:right;margin-top:10px;margin-right:20px;" :count="articleType.articleCount" :numberStyle="{backgroundColor: '#fff', color: '#999', boxShadow: '0 0 0 1px #d9d9d9 inset'}" />
+            </li>
           </a-collapse-panel>
-          <a-collapse-panel key="2" :style="menuStyle" :showArrow="false">
+          <!-- 我的信息 -->
+          <!-- <a-collapse-panel key="2" :style="menuStyle" :showArrow="false">
             <template slot="header">
-              <a-icon type="file-text" :style="iconStyle"/>
+              <a-icon type="file-text" :style="iconStyle" theme="filled"/>
               <span style="color:#CCCCCC">网站页面</span>
+              <span style="float:right;margin-right:25px;font-size:10px;color:gray;"><a-icon type="right"/></span>
             </template>
             <p class="menu-side">经验</p>
-          </a-collapse-panel>
-
+          </a-collapse-panel> -->
+          <!-- 我的操作 -->
           <a-collapse-panel key="3" :style="menuStyle" :showArrow="false">
             <template slot="header">
-              <a-icon type="highlight" :style="iconStyle"/>
+              <a-icon type="highlight" :style="iconStyle" theme="filled"/>
               <span style="color:#CCCCCC">我的操作</span>
-            </template>
-            <p class="menu-side" @click="toWriteArticle()">写博客</p>
-          </a-collapse-panel>
+              <span style="float:right;margin-right:25px;font-size:10px;color:gray;"><a-icon type="right"/></span>
 
+            </template>
+            <p class="menu-side" @click="toWriteArticle()">发布博客</p>
+            <p class="menu-side" @click="toMyArticle()">我的博客</p>
+            <p class="menu-side" @click="toForwardList()">我的收藏</p>
+            <p class="menu-side" @click="toWriteArticle()">我的关注</p>
+            <p class="menu-side" @click="toWriteArticle()">我的 Fans</p>
+            <p class="menu-side" @click="toEditUser()">我的名片</p>
+          </a-collapse-panel>
+          <!-- 管理员的操作 -->
           <a-collapse-panel key="4" :style="menuStyle" :showArrow="false">
             <template slot="header">
-              <a-icon type="loading" :style="iconStyle"/>
+              <a-icon type="tool" :style="iconStyle" theme="filled"/>
               <span style="color:#CCCCCC">管理员</span>
+              <span style="float:right;margin-right:25px;font-size:10px;color:gray;"><a-icon type="right"/></span>
             </template>
             <p class="menu-side" @click="toForwardList()">文章管理</p>
             <p class="menu-side">用户管理</p>
+          </a-collapse-panel>
+            <a-collapse-panel key="5" :style="menuStyle" :showArrow="false">
+            <template slot="header">
+              <a-icon type="setting" :style="iconStyle" theme="filled"/>
+              <span style="color:#CCCCCC">设置</span>
+              <span style="float:right;margin-right:25px;font-size:10px;color:gray;"><a-icon type="right"/></span>
+            </template>
+            <p class="menu-side" @click="toForwardList()">修改密码</p>
+            <p class="menu-side">编辑个人信息</p>
           </a-collapse-panel>
         </a-collapse>
       </div>
@@ -271,7 +306,7 @@ export default {
       userPassword: "",
       // 侧边菜单的属性
       menuShow: false,
-      menuStyle: "padding:0px;background: #3a3f51;border:0px;",
+      menuStyle: "padding:0px;background: #3a3f51;border:0px;cursor:pointer;",
       iconStyle: "margin-right:10px;margin-left:10px;color:#DDDDDD;"
     };
   },
@@ -296,6 +331,32 @@ export default {
     });
   },
   methods: {
+    //名片页面
+    toEditUser(){
+      this.$router.push("/blogUser/editUser");
+    },
+    // 我的博客列表
+    toMyArticle(){
+      this.$router.push("/blogUser/myArticle");
+    },
+    // 关于我
+    aboutMe(){
+      this.$router.push({
+        path:"/blogUser/userMessage",
+        query:{
+          id:sessionStorage.getItem("userId")
+        }
+      });
+    },
+    // 前往用户信息页面
+    toUserMessage(){
+      this.$router.push({
+        path:"/blogUser/userMessage",
+        query:{
+          id:sessionStorage.getItem("userId")
+        }
+      });
+    },
     //前往文章列表
     toArticleList(typeId){
       this.$router.push({
@@ -506,6 +567,10 @@ export default {
 .ant-collapse {
   background: #1d1d1d;
 }
+.ant-collapse-item:hover{
+  background-color: #272d46!important;
+}
+
 /* p标签的样式 */
 .menu-side {
   display: block;

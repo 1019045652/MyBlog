@@ -1,16 +1,16 @@
 <template>
   <div class="quill-wrap">
     <!-- 文章标题 -->
-    <br><br>
+    <br>
     <span><b><span style="color:red;">*</span>文章标题：</b></span>
     <a-input type="text" style="width:400px;" v-model="articleTitle" placeholder="请输入文章标题"></a-input><br>
     <span v-show="titleCheck" class="prompt">请输入文章标题！</span>
-    <br><br>
+    <br>
     <!-- 文章摘要 -->
     <span><b><span style="color:red;">*</span>文章摘要：</b></span>
     <a-input type="text" style="width:400px;" v-model="articleSummary" placeholder="请输入文章摘要"></a-input><br>
      <span  v-show="summaryCheck" class="prompt">请输入文章摘要！</span>
-    <br><br>
+    <br>
     <!-- 文章类别 -->
     <span><b><span style="color:red;">*</span>文章分类：</b></span>
     
@@ -37,7 +37,9 @@
     </div>
   </a-upload>
     <!-- 文章内容 -->
-    <quill-editor v-model="content" ref="myQuillEditor" :options="editorOption"></quill-editor>
+    <div >
+    <quill-editor style="height:200px;" v-model="content" ref="myQuillEditor" :options="editorOption"></quill-editor>
+    </div>
     <br>
     <br>
     <br>
@@ -67,6 +69,8 @@ export default {
   components: { quillEditor },
   data() {
     return {
+      article:{},
+      articleId:0,
       typeList:{},
       articleType:"java",
       summaryCheck:false,
@@ -151,21 +155,29 @@ export default {
         this.summaryCheck = false;
         return;
       }
+      if(this.articleType === "java"){
+        this.$message.error("请选择分类！")
+        return;
+      }
       this.titleCheck = false;
       this.summaryCheck = false;
-
-      axios.post('http://localhost:8081/addArticle',{
+        console.log(this.article.articleCreateTime)
+      axios.post('http://localhost:8081/updateArticle',{
+            articleId:localStorage.getItem("articleId"),
             userId:sessionStorage.getItem("userId"),
             articleTitle:this.articleTitle,
             articleSummary:this.articleSummary,
             articleContent:this.content,
-            articleCreateTime:new Date(),
             articleImg:this.imageUrl,
-            articleType:this.articleType
+            articleType:this.articleType,
+            articleReadCount:this.article.articleReadCount,
+            articleCreateTime:this.article.articleCreateTime,
+            articleLikes:this.article.articleLikes,
+            
       }).then(res=>{
         if(res.data.code === 200){
-          this.$message.success("发布成功！")
-          this.$router.push("/blogArticle/articleList")
+          this.$message.success("更新成功！")
+          this.$router.push("/blogUser/myArticle")
         }else{
           this.$message.error("发布失败，请稍后重试！")
         }
@@ -178,6 +190,20 @@ export default {
     api.findAllArticleType().then(res=>{
       this.typeList = res.data.result
     })
+    //获取文章回显
+      this.articleId = localStorage.getItem("articleId");
+    api
+      .getArticleById({
+        articleId: this.articleId
+      })
+      .then(res => {
+        this.user = res.data.result.user;
+        this.articleTitle = res.data.result.articleTitle
+        this.content = res.data.result.articleContent
+        this.articleSummary = res.data.result.articleSummary
+        this.imageUrl = res.data.result.articleImg
+        this.article = res.data.result
+      });
   },
 };
 </script>
@@ -186,9 +212,7 @@ export default {
   padding:50px;
   background: rgba(255, 255, 255, 0.733);
 }
-.quill-editor{
-  height:400px;
-}
+
 .prompt{
   color:red;
   margin-left: 82px;

@@ -9,6 +9,7 @@ export default {
     getArticleById(params) {
         return axios.get('http://localhost:8081/findAllArticle', { params })
     },
+    // 根据用户id查询用户信息
     getUserById(params) {
         return axios.get('http://localhost:8081/findUserById', { params })
     },
@@ -50,5 +51,16 @@ export default {
     findArticleByType(params) {
         return axios.get('http://localhost:8081/findArticleByType', { params })
     },
-
+    //查询指定用户发布的文章
+    findUserArticle(params) {
+        return axios.get('http://localhost:8081/findUserArticle', { params })
+    },
+    //删除文章
+    deleteArticle(params) {
+        return axios.post('http://localhost:8081/deleteArticle', params)
+    },
+    //编辑用户信息
+    editUser(params) {
+        return axios.post('http://localhost:8081/editUser', params)
+    },
 }

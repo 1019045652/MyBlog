@@ -1,105 +1,52 @@
 <template>
-  <div class="articleList clearfix" style="background-color:white;">
-    <a-card
-  hoverable
-  style="width: 300px"
->
-  <img
-    alt="example"
-    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-    slot="cover"
-  />
-  <template class="ant-card-actions" slot="actions">
-    <a-icon type="setting" />
-    <a-icon type="edit" />
-    <a-icon type="ellipsis" />
-  </template>
-  <a-card-meta
-    title="Card title"
-    description="This is the description">
-    <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-  </a-card-meta>
-</a-card>
+  <div class="articleList clearfix" style="min-height:100vh;">
     <div class="articleDiv clearfix">
-      <div style="margin-left:150px;">
+      <div style="margin-left:90px;">
         <!-- 首页的头部标题 -->
         <div class="articleListTitle">
           <p class="p1">安~的秘密小基地</p>
           <p class="p2">~你永远不懂我伤悲~</p>
         </div>
+        <!-- 首部导航操作按钮 -->
         <div
-          style="width:750px;height:50px;background:rgba(255, 255, 255, 0.775);margin-bottom:30px;border-radius:5px;padding-top:10px;"
+          style="width:940px;height:50px;background:rgba(255, 255, 255, 0.775);margin-bottom:30px;border-radius:5px;padding-top:10px;"
         >
-          <span
-            @click="showList()"
-            style="color:gray;border-radius:3px 3px 0 0;font-weight:600;cursor:pointer;user-select:none;margin-left:20px;display:block;background:pink;width:100px;height:30px;padding-top:5px;text-align:center;"
-          >
-            {{nowMenu}}
-            <a-icon v-show="isShowList" type="caret-down"/>
-            <a-icon v-show="!isShowList" type="caret-right"/>
-          </span>
-          <ul id="cocodashabi">
-            <li @click="toArticleTypeList(-2,'所有文章')">所有文章</li>
-            <li
-              v-for="(articleType,index) in articleTypeList"
-              :key="index"
-              @click="toArticleTypeList(articleType.articleTypeId,articleType.articleTypeName)"
-            >{{articleType.articleTypeName}}</li>
-          </ul>
         </div>
         <!-- 遍历文章 -->
+        <!-- 卡片遍历 -->
         <div class="article" v-for="(article,index) in pageArticleList" :key="index">
-          <!-- 文章卡片 -->
-          <div class="articleCard">
-            <!-- 头部图片 -->
-            <div
-              :style="'background-image:url('+article.articleImg+')'"
-              @mouseover="fangda(index)"
-              @mouseout="suoxiao(index)"
-              class="headerImg"
+          <a-card  hoverable style="width: 300px">
+            <img
+              alt="example"
+              style="width:299px;height:203px;"
+              :src="article.articleImg"
+              slot="cover"
             >
-              <div @click="readArticle(article.articleId)" class="mark animated fadeIn">
-                <div
-                  style="padding-top:10px;width:80%;height:80%;margin:0 auto;border:1px solid white;"
-                >
-                  <div style="color:white;">
-                    <a-icon type="eye" style="color:white;"/>
-                    {{article.articleReadCount}}
-                  </div>
-                  <div style="color:white;">
-                    <a-icon type="bars" style="color:white;"/>java
-                  </div>
-                  <div style="color:white;">前往阅读</div>
-                </div>
-              </div>
-            </div>
-            <!-- 主体内容 -->
-            <div class="content">
-              <div style="height:60px;">
-                <h2
-                  class="articleTitle"
-                  @click="readArticle(article.articleId)"
-                >{{article.articleTitle}}</h2>
-              </div>
-              <p style="color:gray;font-size:15px;">{{article.articleSummary}}</p>
-            </div>
-            <!-- 尾部 -->
-            <div class="foot">
-              <div style="float:left;">
-                <a-avatar :src="article.user.userImage"/>
-                <span
-                  style="font-size:13px;font-weight:600;color:gray;"
-                >{{article.user.userWriteName}}</span>
-              </div>
-            </div>
-            <div class="foot1">
-              <div style="float:right;">{{article.articleCreateTime | dateFormat}}</div>
-            </div>
-          </div>
+            <template class="ant-card-actions" slot="actions">
+              <span href>
+                <a-icon type="star"/>
+                {{article.zfCount}}
+              </span>
+              <span href>
+                <a-icon type="message"/>
+                {{article.plCount}}
+              </span>
+              <span href>
+                <a-icon type="eye"/>
+                {{article.articleReadCount}}
+              </span>
+            </template>
+            <a-card-meta :description="article.articleSummary">
+              <template class="ant-card-actions" slot="title">
+                <span @click="readArticle(article.articleId)">{{article.articleTitle}}</span>
+              </template>
+              <a-avatar @click="toUserMessage(article.user.id)" slot="avatar" :src="article.user.userImage"/>
+            </a-card-meta>
+          </a-card>
         </div>
       </div>
       <a-pagination
-        style="float:left;margin-left:400px;margin-bottom:80px;margin-top:30px;"
+        style="margin-left:460px;margin-bottom:80px;margin-top:30px;clear:both;"
         :pageSize="9"
         @change="onChange"
         :current="current"
@@ -139,29 +86,79 @@ export default {
       isShowList: false,
       articleTypeList: [],
       articleTypeId: -1,
-      nowMenu:"所有文章"
+      nowMenu: "所有文章",
+      style: "color:blue;"
     };
   },
   watch: {
-    articleTypeId: "updateList"
-  },
-  methods: {
-    // 获取指定类型的文章列表
-    updateList() {
-      if (this.articleTypeId === -2) {
-          this.pageArticleList = [];
-          axios.get("http://localhost:8081/findAllArticle").then(res => {
+    articleTypeId: "updateList",
+    $route(to, from) {
+      this.current = 1
+      if(this.$route.query.articleTypeId>0){
+         api
+          .findArticleByType({
+            articleTypeId: this.$route.query.articleTypeId
+          })
+          .then(res => {
             this.articleList = res.data.result;
+            this.total = res.data.result.length;
+            this.pageArticleList = [];
             var i = 0;
-            this.articleList.forEach(ele => {
-              if (i < 9) {
+            res.data.result.forEach(ele => {
+              if (
+                i >= 9 * (this.current - 1) &&
+                i < 9 * (this.current - 1) + 9
+              ) {
                 this.pageArticleList.push(ele);
               }
               i++;
             });
-            this.total = i;
           });
-        
+      }else{
+            this.pageArticleList = [];
+
+         axios.get("http://localhost:8081/findAllArticle").then(res => {
+        this.articleList = res.data.result;
+        var i = 0;
+        this.articleList.forEach(ele => {
+          if (i < 9) {
+            this.pageArticleList.push(ele);
+          }
+          i++;
+        });
+        this.total = i;
+      });
+      }
+      
+    }
+  },
+  methods: {
+    // 查看用户信息
+    toUserMessage(userId){
+      this.$router.push({
+        path:"/blogUser/userMessage",
+        query:{
+          id:userId
+        }
+      })
+    },
+    // 获取指定类型的文章列表
+    updateList() {
+      this.current = 1
+
+      if (this.articleTypeId === -2) {
+        this.pageArticleList = [];
+        axios.get("http://localhost:8081/findAllArticle").then(res => {
+          this.articleList = res.data.result;
+          var i = 0;
+          this.articleList.forEach(ele => {
+            if (i < 9) {
+              this.pageArticleList.push(ele);
+            }
+            i++;
+          });
+          this.total = i;
+        });
       } else {
         api
           .findArticleByType({
@@ -185,7 +182,7 @@ export default {
       }
     },
     // 显示文章分类后的列表
-    toArticleTypeList(id,name) {
+    toArticleTypeList(id, name) {
       this.articleTypeId = id;
       this.nowMenu = name;
       $("#cocodashabi").slideUp(300);
@@ -202,6 +199,7 @@ export default {
       }
     },
     onChange(current) {
+      document.getElementById("qwe").scrollTop = 0;
       this.current = current;
       this.pageArticleList = [];
       var i = 0;
@@ -229,7 +227,25 @@ export default {
   },
   mounted() {
     if (this.$route.query.articleTypeId != null) {
-      console.log(1);
+       api
+          .findArticleByType({
+            articleTypeId: this.$route.query.articleTypeId
+          })
+          .then(res => {
+            this.articleList = res.data.result;
+            this.total = res.data.result.length;
+            this.pageArticleList = [];
+            var i = 0;
+            res.data.result.forEach(ele => {
+              if (
+                i >= 9 * (this.current - 1) &&
+                i < 9 * (this.current - 1) + 9
+              ) {
+                this.pageArticleList.push(ele);
+              }
+              i++;
+            });
+          });
     } else {
       axios.get("http://localhost:8081/findAllArticle").then(res => {
         this.articleList = res.data.result;
@@ -251,6 +267,11 @@ export default {
 };
 </script>
 <style>
+.article {
+  float: left;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
 .articleListTitle {
   width: 50%;
   margin-left: 140px;
@@ -298,13 +319,12 @@ p {
 .articleDiv {
   width: 80%;
   float: left;
-  padding: 50px 0 0 0;
 }
 
 .clearfix:after {
   content: ".";
   display: block;
-  height: 0;
+  height: 20px;
   clear: both;
   visibility: hidden;
 }
@@ -354,6 +374,7 @@ p {
   height: 15%;
 }
 .articleList {
+  margin-top: 50px;
   background-image: url(../../../assets/img/4.jpg);
   background-attachment: fixed;
   background-size: cover;
@@ -417,5 +438,11 @@ p {
   background-color: rgb(231, 228, 228);
   cursor: pointer;
   user-select: none;
+}
+.ant-card-meta-title {
+  color: black;
+}
+.ant-card-meta-title:hover {
+  color: rgb(102, 187, 226);
 }
 </style>

@@ -5,8 +5,8 @@
     <h1 v-show="isShow" style="color:red;">你还没有转发过文章哦！</h1>
       <div v-for="(fd,index) in fdList" :key="index" class="fdArticle">
         <div
-          style="font-weight:600;background:#cb94e0bb;border-radius:5px 5px 0 0;padding:5px 15px 5px 15px;"
-        >于 {{fd.forwardTime | dateFormat}} 转发了：</div>
+          style="font-weight:600;background:white;border-radius:5px 5px 0 0;padding:5px 15px 5px 15px;"
+        >于 {{fd.forwardTime | dateFormat}} 收藏了：</div>
         <div style="padding:10px 15px 10px 15px;">
           <h3 >
             <b @click="readArticle(fd.articleId)" class="fdTitle">{{fd.articleTitle}}</b>
@@ -58,12 +58,16 @@ export default {
 <style>
 .fdArticle {
   margin-bottom: 8px;
-  background-color: rgba(231, 208, 240, 0.87);
+  background-color: rgba(255, 255, 255, 0.603);
   border-radius: 5px;
+  width:500px;
+  margin:0 auto;
 }
 .fdListContainer {
   padding: 20px;
   width: 50%;
+  min-height:100vh;
+  
 }
 .c {
     margin-top:50px;

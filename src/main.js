@@ -10,10 +10,6 @@ import filters from '@/assets/api/utils.js';
 
 router.afterEach((to, from, next) => {
     document.getElementById("qwe").scrollTop = 0
-    console.log(document.documentElement.scrollTop)
-    console.log("跳转了")
-
-
 });
 Vue.use(Antd)
 Vue.config.productionTip = false

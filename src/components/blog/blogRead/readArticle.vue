@@ -3,13 +3,15 @@
     <div class="readArticle">
       <div class="readArticleTitle">
         <p class="read_p1">{{article.articleTitle}}</p>
-        <p class="read_p2">
-          <a-icon class="read_icon" theme="filled" type="smile"/>
-          {{user.userWriteName}}
+        <p class="read_p2" style="cursor:pointer;">
+          <span @click="toUserMessage(user.id)">
+            <a-avatar :size="20" :src="user.userImage"/>
+            {{user.userWriteName}}
+          </span>
           <a-icon class="read_icon" theme="filled" type="eye"/>
           {{article.articleReadCount}}
-          <a-icon class="read_icon" theme="filled" type="tags"/>开发经验
-          <a-icon class="read_icon" theme="filled" type="message"/>2325
+          <a-icon class="read_icon" theme="filled" type="tags"/>{{article.type}}
+          <a-icon class="read_icon" theme="filled" type="message"/>{{article.plCount}}
           <a-icon class="read_icon" theme="filled" type="schedule"/>
           {{article.articleCreateTime|dateFormat}}
         </p>
@@ -40,18 +42,9 @@
           <!--  -->
           <a href="#maodian" style="color:gray;">
             <a-icon class="doIcon" type="message" theme="filled"/>
-            <b>评论({{plCount}})</b>
+            <b>评论({{article.plCount}})</b>
           </a>
-          <!-- 收藏 -->
-          <a @click="sc()" style="color:gray;">
-            <a-icon class="doIcon" type="star" theme="filled"/>
-            <b>收藏({{scCount}})</b>
-          </a>
-          <!-- 取消收藏 -->
-          <a @click="removeSc()" style="color:#3385ff;" v-show="isSc">
-            <a-icon class="doIcon" type="star" theme="filled"/>
-            <b>取消收藏({{scCount}})</b>
-          </a>
+
           <!-- 收藏 -->
           <a @click="zf()" v-show="!isZf" style="color:gray;">
             <a-icon class="doIcon" type="star" theme="filled"/>
@@ -72,7 +65,10 @@
           >留言回复区-----^0^-----^_^-----^v^------^0^------0V0!!------^oo^------</p>
           <hr>
           <div v-for="(ly,index) in lys" :key="index">
-            <p style="color:rgb(41, 110, 53);font-weight:600;">{{ly.lyUserName}}:</p>
+            <p @click="toUserMessage(ly.lyUserId)" style="color:rgb(41, 110, 53);font-weight:600;cursor:pointer;">
+              <a-avatar v-if="ly.lyUserImg" :size="20" :src="ly.lyUserImg"/>
+              {{ly.lyUserName}}:
+              </p>
             <p style="text-indent:25px">{{ly.lyContent}}</p>
             <p style="text-indent:25px;color:gray;font-weight:600;">发布于{{ly.lyTime | dateFormat}}</p>
             <p style="text-indent:25px;color:rgb(10, 100, 194);">回复</p>
@@ -119,10 +115,10 @@ export default {
   data() {
     return {
       // 点赞转发收藏按钮的数量
-      dzCount:0,
-      plCount:0,
-      scCount:0,
-      zfCount:0,
+      dzCount: 0,
+      plCount: 0,
+      scCount: 0,
+      zfCount: 0,
       // 点赞转发收藏按钮的样式转换
       isDz: false,
       isSc: false,
@@ -133,7 +129,8 @@ export default {
       article: {},
       articleId: "",
       user: {},
-      lys: []
+      lys: [],
+      nowUserImg:"",
     };
   },
   watch: {
@@ -158,6 +155,7 @@ export default {
       })
       .then(res => {
         this.nowUser = res.data.result.userWriteName;
+        this.nowUserImg = res.data.result.userImage;
       });
     // 获取留言
     api
@@ -174,20 +172,32 @@ export default {
         forwardUserId: sessionStorage.getItem("userId")
       })
       .then(res => {
-        if(res.data.code === 200){
+        if (res.data.code === 200) {
           this.isZf = true;
-        }else{
+        } else {
           this.isZf = false;
         }
       });
-      // 获取文章转发次数
-      api.getZfCount({
-        articleId:this.articleId
-      }).then(res=>{
-        this.zfCount = res.data.result
+    // 获取文章转发次数
+    api
+      .getZfCount({
+        articleId: this.articleId
       })
+      .then(res => {
+        this.zfCount = res.data.result;
+      });
   },
   methods: {
+    // 点击头像查看用户
+    toUserMessage(userId) {
+      this.$router.push({
+        path: "/blogUser/userMessage",
+        query: {
+          id: userId
+        }
+      });
+    },
+    // 点赞
     dz() {
       if (sessionStorage.getItem("userId") === null) {
         this.$message.error("请先登录");
@@ -196,6 +206,7 @@ export default {
       }
     },
     sc() {},
+    // 收藏功能
     zf() {
       api
         .forwardArticle({
@@ -212,19 +223,22 @@ export default {
           }
         });
     },
-    removeZf(){
-      api.removeForward({
+    // 取消收藏
+    removeZf() {
+      api
+        .removeForward({
           forwardArticleId: localStorage.getItem("articleId"),
           forwardUserId: sessionStorage.getItem("userId")
-      }).then(res=>{
-        if(res.data.code === 200){
-          this.$message.success(res.data.message);
-          this.isZf = false;
-          this.zfCount--;
-        }else{
-          this.$message.error(res.data.message)
-        }
-      })
+        })
+        .then(res => {
+          if (res.data.code === 200) {
+            this.$message.success(res.data.message);
+            this.isZf = false;
+            this.zfCount--;
+          } else {
+            this.$message.error(res.data.message);
+          }
+        });
     },
     // 获取留言
     getLy() {
@@ -242,6 +256,7 @@ export default {
         .addLy({
           lyUserId: sessionStorage.getItem("userId"),
           lyUserName: this.nowUser,
+          lyUserImg:this.nowUserImg,
           lyContent: this.ly,
           lyTime: new Date(),
           lyArticleId: this.articleId
@@ -260,88 +275,81 @@ export default {
 };
 </script>
 <style>
-
-  .reply p{
-    margin-bottom: 5px;
-  }
-  .doIcon {
-    margin-left: 10px;
-    cursor: pointer;
-  }
-  .replyArea {
-  }
-  .replyForm {
-  }
-  .clearfix:after {
-    content: ".";
-    display: block;
-    height: 0;
-    clear: both;
-    visibility: hidden;
-  }
-  .read_container {
-    background-image: url(../../../assets/img/4.jpg);
-    background-attachment: fixed;
-    background-size: cover;
-
-  }
-  .read_content {
-    padding: 40px;
-    background-color: rgba(255, 255, 255, 0.897);
-  }
-  .read_icon {
-    margin-left: 15px;
-  }
-  .read_p1 {
-    font-size: 32px;
-    font-weight: bold;
-    color: rgb(71, 71, 71);
-    margin-bottom: 15px;
-  }
-  .read_p2 {
-    font-weight: 600;
-    color: rgb(122, 122, 122);
-    margin-bottom: 50px;
-  }
-  .readArticleTitle {
-    text-align: center;
-  }
-  .readArticle {
-    float: left;
-    width: 80%;
-    padding: 60px 20px 10px 20px;
-    min-height: 100vh;
-  }
-  .articleContent {
-    width: 70%;
-    margin: 0 auto;
-  }
-  /* 侧边栏 */
-  .sideList {
-    float: right;
-    width: 20%;
-    margin-top:50px;
-
-  }
-  .sideMenuList {
-    height: 50px;
-  }
-  .sideMenuList > ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .sideMenuList > ul > li {
-    float: left;
-    display: block;
-    width: 33.3%;
-    background: white;
-    height: 50px;
-    text-align: center;
-    line-height: 50px;
-  }
-  .sideMenuList > ul > li:hover {
-    background: rgb(236, 236, 236);
-  }
+.reply p {
+  margin-bottom: 5px;
+}
+.doIcon {
+  margin-left: 10px;
+  cursor: pointer;
+}
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.read_container {
+  background-image: url(../../../assets/img/4.jpg);
+  background-attachment: fixed;
+  background-size: cover;
+}
+.read_content {
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.897);
+}
+.read_icon {
+  margin-left: 15px;
+}
+.read_p1 {
+  font-size: 32px;
+  font-weight: bold;
+  color: rgb(71, 71, 71);
+  margin-bottom: 15px;
+}
+.read_p2 {
+  font-weight: 600;
+  color: rgb(122, 122, 122);
+  margin-bottom: 50px;
+}
+.readArticleTitle {
+  text-align: center;
+}
+.readArticle {
+  float: left;
+  width: 80%;
+  padding: 60px 20px 10px 20px;
+  min-height: 100vh;
+}
+.articleContent {
+  width: 70%;
+  margin: 0 auto;
+}
+/* 侧边栏 */
+.sideList {
+  float: right;
+  width: 20%;
+  margin-top: 50px;
+}
+.sideMenuList {
+  height: 50px;
+}
+.sideMenuList > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sideMenuList > ul > li {
+  float: left;
+  display: block;
+  width: 33.3%;
+  background: white;
+  height: 50px;
+  text-align: center;
+  line-height: 50px;
+}
+.sideMenuList > ul > li:hover {
+  background: rgb(236, 236, 236);
+}
 </style>
 
