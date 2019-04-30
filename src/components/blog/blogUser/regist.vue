@@ -1,6 +1,6 @@
 <template>
-  <div style=" width:100%;background:rgb(238, 238, 238);">
-    <div v-show="isRegist" style="background:rgb(238, 238, 238);padding:20px 100px 100px 100px;">
+  <div class="registContainer" style=" width:100%;">
+    <div v-show="isRegist" style="padding:20px 100px 100px 100px;">
       <div style="text-align:center;font-size:30px; margin-bottom:40px;">欢迎注册</div>
       <a-form :form="form">
         <a-form-item label="用户名" :labelCol="formItemLayout.labelCol">
@@ -101,7 +101,10 @@
         </a-form-item>
       </a-form>
     </div>
-    <div v-show="!isRegist" style="width:38%;margin:0 auto;margin-top:250px; font-size:25px;">恭喜你注册成功啦！点击页面右上角登录>></span></div>
+    <div
+      v-show="!isRegist"
+      style="width:38%;margin:0 auto;margin-top:250px; font-size:25px;"
+    >恭喜你注册成功啦！点击页面右上角登录>></div>
   </div>
 </template>
 
@@ -114,7 +117,7 @@ const formItemLayout = {
 export default {
   data() {
     return {
-      isRegist:true,
+      isRegist: true,
       form: this.$form.createForm(this),
       loading: false,
       imageUrl: "",
@@ -124,9 +127,8 @@ export default {
       userSex: "男"
     };
   },
-  mounted(){
-     document.getElementById("qwe").scrollTop = 0
-
+  mounted() {
+    document.getElementById("qwe").scrollTop = 0;
   },
   methods: {
     // 校验两次密码的输入是否一致
@@ -191,10 +193,12 @@ export default {
               userBirth: values["range-picker"]
             })
             .then(res => {
-              if(res.data.code === 200){
+              if (res.data.code === 200) {
                 this.$message.success("注册成功！");
-                this.isRegist = false;
-              }else{
+                this.$router.push("/login")
+              } else if (res.data.code === 402) {
+                this.$message.error("用户名已存在");
+              } else {
                 this.$message.error("注册失败，请联系管理员！");
               }
             });
@@ -212,5 +216,11 @@ export default {
 }
 .ant-form-explain {
   clear: none;
+}
+.registContainer {
+  min-height: 100vh;
+  background-image: url(../../../assets/img/4.jpg);
+  background-attachment: fixed;
+  background-size: cover;
 }
 </style>

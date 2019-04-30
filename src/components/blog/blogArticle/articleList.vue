@@ -4,13 +4,13 @@
       <div style="margin-left:90px;">
         <!-- 首页的头部标题 -->
         <div class="articleListTitle">
-          <p class="p1">安~的秘密小基地</p>
-          <p class="p2">~你永远不懂我伤悲~</p>
+        
         </div>
         <!-- 首部导航操作按钮 -->
         <div
-          style="width:940px;height:50px;background:rgba(255, 255, 255, 0.775);margin-bottom:30px;border-radius:5px;padding-top:10px;"
+          style="width:940px;height:50px;background:rgba(255, 255, 255, 0.775);margin-bottom:30px;border-radius:5px;padding-top:13px;"
         >
+        <span style="margin-left:20px;"><b>当前位置<a-icon type="environment" />：</b>首页</span>
         </div>
         <!-- 遍历文章 -->
         <!-- 卡片遍历 -->
@@ -87,7 +87,8 @@ export default {
       articleTypeList: [],
       articleTypeId: -1,
       nowMenu: "所有文章",
-      style: "color:blue;"
+      style: "color:blue;",
+      a:0
     };
   },
   watch: {
@@ -114,6 +115,7 @@ export default {
               i++;
             });
           });
+
       }else{
             this.pageArticleList = [];
 
@@ -129,7 +131,6 @@ export default {
         this.total = i;
       });
       }
-      
     }
   },
   methods: {
@@ -145,7 +146,6 @@ export default {
     // 获取指定类型的文章列表
     updateList() {
       this.current = 1
-
       if (this.articleTypeId === -2) {
         this.pageArticleList = [];
         axios.get("http://localhost:8081/findAllArticle").then(res => {
@@ -391,7 +391,7 @@ p {
 .sideList {
   float: right;
   width: 20%;
-  margin-top: 50px;
+  margin-top: 0px;
 }
 .sideMenuList {
   height: 50px;

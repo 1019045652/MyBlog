@@ -1,5 +1,15 @@
 <template>
   <div class="quill-wrap">
+     <div
+      style="width:940px;height:50px;background:rgba(255, 255, 255, 0.775);margin-bottom:0px;border-radius:5px;padding-top:13px;"
+    >
+      <span style="margin-left:20px;">
+        <b>
+          当前位置
+          <a-icon type="environment"/>：
+        </b>我的操作 / 发布博客
+      </span>
+    </div>
     <!-- 文章标题 -->
     <br><br>
     <span><b><span style="color:red;">*</span>文章标题：</b></span>
@@ -37,7 +47,7 @@
     </div>
   </a-upload>
     <!-- 文章内容 -->
-    <quill-editor v-model="content" ref="myQuillEditor" :options="editorOption"></quill-editor>
+    <quill-editor  v-model="content" ref="myQuillEditor" :options="editorOption"></quill-editor>
     <br>
     <br>
     <br>
@@ -192,6 +202,13 @@ export default {
 .prompt{
   color:red;
   margin-left: 82px;
+}
+.quill-wrap{
+  margin-top:50px;
+    min-height: 100vh;
+  background-image: url(../../../assets/img/4.jpg);
+  background-attachment: fixed;
+  background-size: cover;
 }
 </style>
 

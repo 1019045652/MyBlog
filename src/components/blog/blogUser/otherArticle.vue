@@ -33,9 +33,6 @@
               <a-icon type="eye"/>
               {{article.articleReadCount}}
             </span>
-            <span @click="deleteArticle(article.articleId)">
-              <a-icon type="delete"/>删除
-            </span>
             <span @click="editArticle(article.articleId)">
               <a-icon type="edit"/>编辑
             </span>
@@ -94,7 +91,7 @@ export default {
     getMyArticleList() {
       api
         .findUserArticle({
-          id: sessionStorage.getItem("userId")
+          id: this.$route.query.id
         })
         .then(res => {
           this.myArticleMsg = res.data.message;
@@ -221,7 +218,7 @@ export default {
   mounted() {
     api
       .findUserArticle({
-        id: sessionStorage.getItem("userId")
+        id: this.$route.query.id
       })
       .then(res => {
         this.myArticleMsg = res.data.message;

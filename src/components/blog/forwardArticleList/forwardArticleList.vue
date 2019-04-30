@@ -1,7 +1,18 @@
 <template>
 <div>
-  <div class="c">
+  <div style="padding-top:50px;padding-left:50px;" class="c">
+     <div
+      style="width:940px;height:50px;background:rgba(255, 255, 255, 0.775);margin-bottom:30px;border-radius:5px;padding-top:13px;"
+    >
+      <span style="margin-left:20px;">
+        <b>
+          当前位置
+          <a-icon type="environment"/>：
+        </b>我的操作 / 我的 Fans
+      </span>
+    </div>
     <div class="fdListContainer">
+      
     <h1 v-show="isShow" style="color:red;">你还没有转发过文章哦！</h1>
       <div v-for="(fd,index) in fdList" :key="index" class="fdArticle">
         <div
@@ -61,10 +72,10 @@ export default {
   background-color: rgba(255, 255, 255, 0.603);
   border-radius: 5px;
   width:500px;
-  margin:0 auto;
+  margin-bottom: 20px;
 }
 .fdListContainer {
-  padding: 20px;
+  padding: 0px;
   width: 50%;
   min-height:100vh;
   

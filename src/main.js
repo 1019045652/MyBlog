@@ -10,6 +10,17 @@ import filters from '@/assets/api/utils.js';
 
 router.afterEach((to, from, next) => {
     document.getElementById("qwe").scrollTop = 0
+        // if (to.matched.some(record => record.meta.requireAuth)) {
+        //     if (sessionStorage.getItem("userId") !== null) { 
+        //         // 判断当前的token是否存在
+        //         next();
+        //     } else {
+        //         router.push({ path: '/blogArticle/articleList' })
+        //         this.$message.success("123");
+        //     }
+        // } else {
+        //     next();
+        // }
 });
 Vue.use(Antd)
 Vue.config.productionTip = false

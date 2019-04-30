@@ -36,9 +36,7 @@
             <span @click="deleteArticle(article.articleId)">
               <a-icon type="delete"/>删除
             </span>
-            <span @click="editArticle(article.articleId)">
-              <a-icon type="edit"/>编辑
-            </span>
+            
           </template>
           <a-card-meta :description="article.articleSummary">
             <template class="ant-card-actions" slot="title">
@@ -92,44 +90,48 @@ export default {
   methods: {
     //获取文章列表
     getMyArticleList() {
-      api
-        .findUserArticle({
-          id: sessionStorage.getItem("userId")
-        })
-        .then(res => {
-          this.myArticleMsg = res.data.message;
-          this.articleList = res.data.result;
-            if (res.data.message === "尚未发布文章!") {
-            this.isTableShow = false;
-          } else {
-            this.isTableShow = true;
-          }
-          this.total = res.data.result.length;
-          this.pageArticleList = [];
-          
-          var i = 0;
-          res.data.result.forEach(ele => {
+    this.pageArticleList = [];
+     axios.get("http://localhost:8081/findAllArticle").then(res => {
+        this.articleList = res.data.result;
+        this.total = res.data.result.length;
+        var i = 0;
+        res.data.result.forEach(ele => {
             if (i >= 9 * (this.current - 1) && i < 9 * (this.current - 1) + 9) {
               this.pageArticleList.push(ele);
             }
             i++;
-          });
-        });
+        })
+      });
     },
     // 刪除文章
     deleteArticle(id) {
-      api
+
+       var _this = this;
+      this.$confirm({
+        title: " 确定要删除吗？",
+        content: "删除后无法恢复！",
+        okText: "是",
+        okType: "danger",
+        cancelText: "否",
+        onOk() {
+          api
         .deleteArticle({
-          articleId: id
+          articleId: id,
+          userId:sessionStorage.getItem("userId")
         })
         .then(res => {
           if (res.data.code === 200) {
-            this.$message.success(res.data.message);
-            this.a++;
+            _this.$message.success(res.data.message);
+            _this.a++;
           } else {
-            this.$message.error(res.data.message);
+            _this.$message.error(res.data.message);
           }
         });
+        },
+        onCancel() {}
+      });
+
+     
     },
     // 编辑文章
     editArticle(id) {
@@ -219,29 +221,18 @@ export default {
     }
   },
   mounted() {
-    api
-      .findUserArticle({
-        id: sessionStorage.getItem("userId")
-      })
-      .then(res => {
-        this.myArticleMsg = res.data.message;
+    axios.get("http://localhost:8081/findAllArticle").then(res => {
         this.articleList = res.data.result;
-          if (res.data.message === "尚未发布文章!") {
-            this.isTableShow = false;
-          } else {
-            this.isTableShow = true;
-          }
-        this.total = res.data.result.length;
-        this.pageArticleList = [];
         var i = 0;
-        res.data.result.forEach(ele => {
-          if (i >= 9 * (this.current - 1) && i < 9 * (this.current - 1) + 9) {
+        this.articleList.forEach(ele => {
+          if (i < 9) {
             this.pageArticleList.push(ele);
           }
           i++;
         });
+        this.total = i;
       });
-
+      
     // 获取文章分类列表
     api.findAllArticleType().then(res => {
       this.articleTypeList = res.data.result;
@@ -271,3 +262,4 @@ export default {
   color: rgb(102, 187, 226);
 }
 </style>
+

@@ -1,9 +1,7 @@
 <template>
   <div id="app">
-    <div style="background:rgb(208, 248, 246);">
-    <div class="main-routerView">
+    <div>
        <router-view/>
-    </div>
     </div>
    
   </div>

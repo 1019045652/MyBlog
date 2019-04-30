@@ -63,4 +63,48 @@ export default {
     editUser(params) {
         return axios.post('http://localhost:8081/editUser', params)
     },
+    //关注用户
+    followUser(params) {
+        return axios.post('http://localhost:8081/followUser', params)
+    },
+    //取消关注
+    removeFollow(params) {
+        return axios.post('http://localhost:8081/removeFollow', params)
+    },
+    //是否关注过
+    findFollow(params) {
+        return axios.post('http://localhost:8081/findFollow', params)
+    },
+    // 关注列表
+    findFollowList(params) {
+        return axios.post('http://localhost:8081/findFollowList', params)
+    },
+    findFansList(params) {
+        return axios.post('http://localhost:8081/findFansList', params)
+    },
+    // 查找所有用户
+    findAllUser(params) {
+        return axios.post('http://localhost:8081/findAllUser', params)
+    },
+    //删除用户
+    deleteUser(params) {
+        return axios.post('http://localhost:8081/deleteUser', params)
+    },
+    //addType
+    addType(params) {
+        return axios.post('http://localhost:8081/addType', params)
+
+    },
+    editType(params) {
+        return axios.post('http://localhost:8081/editType', params)
+    },
+    findAnno() {
+        return axios.post('http://localhost:8081/findAnno')
+    },
+    addAnno(params) {
+        return axios.post('http://localhost:8081/addAnno', params)
+    },
+    deleteAnno(params) {
+        return axios.post('http://localhost:8081/deleteAnno', params)
+    }
 }

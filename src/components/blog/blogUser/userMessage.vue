@@ -12,6 +12,16 @@
             :size="userImageSize"
             :src="userMessage.userImage"
           />
+          <br>
+          <br>
+          <div v-show="showDic">
+            <div v-show="!showFollow" style="margin-left:40px;">
+              <a-button @click.native="followUser()">关注</a-button>
+            </div>
+            <div v-show="showFollow" style="margin-left:35px;">
+              <a-button @click.native="removeFollow()">取消关注</a-button>
+            </div>
+          </div>
         </div>
         <div style="float:right;width:70%;">
           <!-- 账号 -->
@@ -76,26 +86,29 @@
           <!-- 账号 -->
           <div class="messageLanMu">
             <a-icon type="file-text" theme="filled" style="font-size:18px;"/>
-            <span style="font-weight:800;">已发布文章：</span>
-            <span style="color:gray;" v-if="userMessage.writeCount!==0">{{userMessage.writeCount}}篇</span>
+            
+            <span @click="toUserArticle()" style="font-weight:800;cursor:pointer;">已发布文章：</span>
+            <span @click="toUserArticle()" style="color:gray;cursor:pointer;" v-if="userMessage.writeCount!==0">{{userMessage.writeCount}}篇</span>
+            
             <span style="color:gray;" v-else>暂无发布文章！</span>
           </div>
 
           <!-- 昵称 -->
           <div class="messageLanMu">
             <a-icon type="star" theme="filled" style="font-size:18px;"/>
-            <span style="font-weight:800;" >已收藏文章：</span>
-            <span style="color:gray;" v-if="userMessage.collectCount!==0">{{userMessage.collectCount}}篇</span>
+            <span style="font-weight:800;">已收藏文章：</span>
+            <span
+              style="color:gray;"
+              v-if="userMessage.collectCount!==0"
+            >{{userMessage.collectCount}}篇</span>
             <span style="color:gray;" v-else>暂无收藏文章！</span>
           </div>
         </div>
       </a-card>
       <div style="background:white;">
-      <!-- 时间轴 -->
-    
+        <!-- 时间轴 -->
       </div>
     </div>
-    
   </div>
 </template>
 <script>
@@ -103,22 +116,43 @@ import api from "@/assets/api/index.js";
 export default {
   data() {
     return {
+      showDic: true,
+      showFollow: false,
       userMessage: [],
       userImageSize: 150
     };
   },
   mounted() {
+    if (this.$route.query.id === sessionStorage.getItem("userId")) {
+      this.showDic = false;
+    }
+    api
+      .getUserById({
+        id: this.$route.query.id
+      })
+      .then(res => {
+        this.userMessage = res.data.result;
+      });
 
-     api
-        .getUserById({
-          id: this.$route.query.id
-        })
-        .then(res => {
-          this.userMessage = res.data.result;
-        });
-        
+    // 判断是否关注
+    api
+      .findFollow({
+        followUserId: sessionStorage.getItem("userId"),
+        followForUserId: this.$route.query.id
+      })
+      .then(res => {
+        if (res.data.code === 200) {
+          this.showFollow = true;
+        } else {
+          this.showFollow = false;
+        }
+      });
+    if (sessionStorage.getItem("userId") === null) {
+      this.showDic = false;
+    }
+
     // if (sessionStorage.getItem("seMe") === 3) {
-     
+
     // } else {
     //   api
     //     .getUserById({
@@ -129,7 +163,46 @@ export default {
     //     });
     // }
   },
-  methods: {}
+  methods: {
+    toUserArticle(){
+      this.$router.push({
+        path:"/blogUser/otherArticle",
+        query:{id:this.userMessage.id}
+      })
+    },
+    // 关注用户
+    followUser() {
+      api
+        .followUser({
+          followUserId: sessionStorage.getItem("userId"),
+          followForUserId: this.userMessage.id
+        })
+        .then(res => {
+          if (res.data.code === 200) {
+            this.$message.success("关注成功！");
+            this.showFollow = true;
+          } else {
+            this.$message.error("操作失败，请稍后重试！");
+          }
+        });
+    },
+    //取消关注用户
+    removeFollow() {
+      api
+        .removeFollow({
+          followUserId: sessionStorage.getItem("userId"),
+          followForUserId: this.userMessage.id
+        })
+        .then(res => {
+          if (res.data.code === 200) {
+            this.$message.success("取消成功！");
+            this.showFollow = false;
+          } else {
+            this.$message.error("操作失败，请稍后重试！");
+          }
+        });
+    }
+  }
 };
 </script>
 <style>

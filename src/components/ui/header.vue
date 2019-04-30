@@ -81,26 +81,28 @@
         </div>
         <!-- 我的操作 -->
         <div
+        v-show="!loginBtn"
           @mouseenter="showMenu(2)"
           @mouseleave="hideMenu(2)"
           style="height:50px;"
           class="menu animated fadeInRight side-menu2"
         >
           <a-icon
-            type="file-text"
+            type="highlight"
             @click="toHeadPage()"
             style="font-size:17px;cursor:pointer;color:white;margin-left:15px;margin-top:20px;"
           />
         </div>
         <!-- 待开发 -->
         <div
+        v-show="!loginBtn"
           @mouseenter="showMenu(3)"
           @mouseleave="hideMenu(3)"
           style="height:50px;"
           class="menu animated fadeInRight side-menu1z"
         >
           <a-icon
-            type="form"
+            type="tool"
             @click="toHeadPage()"
             style="font-size:17px;cursor:pointer;color:white;margin-left:15px;margin-top:20px;"
           />
@@ -127,7 +129,7 @@
               v-for="(articleType,index) in articleTypeList"
               :key="index"
             >{{articleType.articleTypeName}}
-            
+              <a-badge style="float:right;margin-top:10px;margin-right:20px;" :count="articleType.articleCount" :numberStyle="{backgroundColor: '#fff', color: '#999', boxShadow: '0 0 0 1px #d9d9d9 inset'}" />
             </li>
           </ul>
           <!-- 第二个菜单 -->
@@ -142,15 +144,23 @@
               <span style="margin-left:0px;margin-bottom:10px;font-size:13px;">我的操作</span>
             </div>
             <li @click="toWriteArticle()">写博客</li>
+            <li @click="toWriteArticle()">发布博客</li>
+            <li @click="toMyArticle()">我的博客</li>
+            <li @click="toForwardList()">我的收藏</li>
+            <li @click="toFollowUserList()">我的关注</li>
+            <li @click="toFans()">我的 Fans</li>
+            <li @click="toEditUser()">我的名片</li>
           </ul>
           <!-- 第三个菜单 -->
           <ul class="smallMenu3" style="padding-top:5px;">
             <!-- 标题 -->
             <div style="color:white;border-bottom:1px solid gray;padding-bottom:5px;">
               <a-icon type="form" @click="toHeadPage()" style="font-size:13px;margin-left:10px;"/>
-              <span style="margin-left:0px;margin-bottom:10px;font-size:13px;">网站页面</span>
+              <span style="margin-left:0px;margin-bottom:10px;font-size:13px;">管理员</span>
             </div>
-            <li>经验</li>
+            <li  @click="managerArticle()">文章管理</li>
+            <li  @click="managerUser()">用户管理</li>
+            <li  @click="toTypeAdd()">标签管理</li>
           </ul>
         </div>
       </div>
@@ -202,41 +212,33 @@
             <a-badge style="float:right;margin-top:10px;margin-right:20px;" :count="articleType.articleCount" :numberStyle="{backgroundColor: '#fff', color: '#999', boxShadow: '0 0 0 1px #d9d9d9 inset'}" />
             </li>
           </a-collapse-panel>
-          <!-- 我的信息 -->
-          <!-- <a-collapse-panel key="2" :style="menuStyle" :showArrow="false">
-            <template slot="header">
-              <a-icon type="file-text" :style="iconStyle" theme="filled"/>
-              <span style="color:#CCCCCC">网站页面</span>
-              <span style="float:right;margin-right:25px;font-size:10px;color:gray;"><a-icon type="right"/></span>
-            </template>
-            <p class="menu-side">经验</p>
-          </a-collapse-panel> -->
-          <!-- 我的操作 -->
-          <a-collapse-panel key="3" :style="menuStyle" :showArrow="false">
+          <a-collapse-panel v-show="!loginBtn" key="3" :style="menuStyle" :showArrow="false">
             <template slot="header">
               <a-icon type="highlight" :style="iconStyle" theme="filled"/>
               <span style="color:#CCCCCC">我的操作</span>
               <span style="float:right;margin-right:25px;font-size:10px;color:gray;"><a-icon type="right"/></span>
-
             </template>
             <p class="menu-side" @click="toWriteArticle()">发布博客</p>
             <p class="menu-side" @click="toMyArticle()">我的博客</p>
             <p class="menu-side" @click="toForwardList()">我的收藏</p>
-            <p class="menu-side" @click="toWriteArticle()">我的关注</p>
-            <p class="menu-side" @click="toWriteArticle()">我的 Fans</p>
+            <p class="menu-side" @click="toFollowUserList()">我的关注</p>
+            <p class="menu-side" @click="toFans()">我的 Fans</p>
             <p class="menu-side" @click="toEditUser()">我的名片</p>
           </a-collapse-panel>
           <!-- 管理员的操作 -->
-          <a-collapse-panel key="4" :style="menuStyle" :showArrow="false">
+          <a-collapse-panel v-show="!loginBtn" key="4"  :style="menuStyle" :showArrow="false">
             <template slot="header">
               <a-icon type="tool" :style="iconStyle" theme="filled"/>
               <span style="color:#CCCCCC">管理员</span>
               <span style="float:right;margin-right:25px;font-size:10px;color:gray;"><a-icon type="right"/></span>
             </template>
-            <p class="menu-side" @click="toForwardList()">文章管理</p>
-            <p class="menu-side">用户管理</p>
-          </a-collapse-panel>
-            <a-collapse-panel key="5" :style="menuStyle" :showArrow="false">
+            <p class="menu-side" @click="managerArticle()">文章管理</p>
+            <p class="menu-side" @click="managerUser()">用户管理</p>
+            <p class="menu-side" @click="toTypeAdd()">标签管理</p>
+            <p class="menu-side" @click="toAnnouncement()">公告管理</p>
+          </a-collapse-panel >
+          <!-- 设置 -->
+            <a-collapse-panel v-show="!loginBtn" key="5" :style="menuStyle" :showArrow="false">
             <template slot="header">
               <a-icon type="setting" :style="iconStyle" theme="filled"/>
               <span style="color:#CCCCCC">设置</span>
@@ -273,9 +275,7 @@
           </a-form-item>
         </a-form>
       </a-modal>
-
       <!-- 头部栏 -->
-
       <a-layout-content>
         <!-- routerView -->
         <transition name="slide-fade">
@@ -293,6 +293,7 @@ export default {
   data() {
     const { lang } = this.$route.params;
     return {
+      isManager:false,
       articleTypeList: [],
       // 当前用户信息
       userImage: "",
@@ -311,6 +312,7 @@ export default {
     };
   },
   mounted() {
+    document.getElementById("qwe").scrollTop = 0
     //  获取cookie信息，判断登录状态
     this.getCookie();
     if (sessionStorage.getItem("userId") != null) {
@@ -323,6 +325,11 @@ export default {
       .then(res => {
         this.userImage = res.data.result.userImage;
         this.nowUser = res.data.result.userName;
+        if(res.data.result.manager === 1){
+          this.isManager = true
+        }else{
+          this.isManager = false
+        }
       });
 
     // 获取文章分类列表
@@ -331,6 +338,31 @@ export default {
     });
   },
   methods: {
+    // 前往公告管理
+    toAnnouncement(){
+      this.$router.push("/blogManager/managerAnno")
+    },
+    //前往标签管理
+    toTypeAdd(){
+      this.$router.push("/blogManager/managerType");
+    },
+    // 管理用户
+    managerUser(){
+      this.$router.push("/blogManager/managerUser");
+    },
+    
+    // 管理文章
+    managerArticle(){
+      this.$router.push("/blogManager/managerArticle");
+    },
+    //fans页面
+    toFans(){
+      this.$router.push("/blogUser/fansList");
+    },
+    //关注列表页面
+    toFollowUserList(){
+      this.$router.push("/blogUser/followUserList");
+    },
     //名片页面
     toEditUser(){
       this.$router.push("/blogUser/editUser");
@@ -416,7 +448,7 @@ export default {
     },
     click() {},
     showLogin() {
-      this.visible = true;
+      this.$router.push("/login")
     },
     clearCookie: function() {
       this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
@@ -461,9 +493,11 @@ export default {
           _this.nowUser = "";
           _this.userImage = "";
           _this.$message.success("注销成功！", 1);
+        
         },
         onCancel() {}
       });
+      window.reload();
     },
     login() {
       axios

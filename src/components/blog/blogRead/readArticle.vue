@@ -30,15 +30,15 @@
           style="border-radius:5px;padding:20px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;"
         >
           <!-- 点赞 -->
-          <a href="javaScript:;" @click="dz()" style="color:gray;">
+          <!-- <a href="javaScript:;" @click="dz()" style="color:gray;">
             <a-icon class="doIcon" type="like" theme="filled" style="margin-left:20px;"/>
             <b>点赞({{dzCount}})</b>
-          </a>
+          </a> -->
           <!-- 取消点赞 -->
-          <a @click="removeDz()" style="color:#3385ff;" v-show="isDz">
+          <!-- <a @click="removeDz()" style="color:#3385ff;" v-show="isDz">
             <a-icon class="doIcon" type="like" theme="filled" style="margin-left:20px;"/>
             <b>取消点赞({{dzCount}})</b>
-          </a>
+          </a> -->
           <!--  -->
           <a href="#maodian" style="color:gray;">
             <a-icon class="doIcon" type="message" theme="filled"/>
@@ -86,7 +86,8 @@
     </div>
 
     <!-- 侧边栏 -->
-    <div class="sideList">
+  
+    <div class="sideList" style="margin-top: 50px;F">
       <div class="sideMenuList">
         <ul>
           <li>
@@ -137,6 +138,7 @@ export default {
     a: "getLy"
   },
   mounted() {
+    this.$router.push("/blogArticle/readArticle/hotArticle");
     this.articleId = localStorage.getItem("articleId");
     // 获取文章内容
     api
@@ -329,7 +331,6 @@ export default {
 .sideList {
   float: right;
   width: 20%;
-  margin-top: 50px;
 }
 .sideMenuList {
   height: 50px;

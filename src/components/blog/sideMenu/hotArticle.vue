@@ -1,20 +1,27 @@
 <template>
     <div class="hotBody">
         <div class="gonggao">
-            <h4>关于建站的公告</h4>
-            <p>关于建站我有一些想说的<br>这里还要有一些东西</p>
+            <h4 style="color:red;font-weight:600;">{{anno.annoTitle}}</h4>
+            <p style="color:gray;font-size:13px;font-weight:600;">于{{anno.annoTime|dateFormat}}发布</p>
+            <p>{{anno.annoText}}</p>
         </div>
     </div>
 </template>
 
 <script>
+import api from "@/assets/api/index.js";
 export default {
     data(){
         return {
-            
+            anno:{},
+            annoList:[]
         }
     },
     mounted(){
+        api.findAnno().then(res=>{
+            this.annoList = res.data.result
+            this.anno = this.annoList[this.annoList.length-1]
+        })
     },
 }
 </script>
@@ -25,6 +32,7 @@ export default {
     padding:5px;
 }
 .gonggao{
+    word-break:break-all; 
     background-color:rgb(255, 251, 200);
     padding:8px;
     width:90%;
